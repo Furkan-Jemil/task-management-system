@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useCreateProject, useUpdateProject } from '../../lib/hooks/useProjects';
 import Button from '../ui/Button';
 import Input from '../ui/Input';
+import toast from 'react-hot-toast';
 
 interface ProjectFormProps {
     initialData?: any;
@@ -35,12 +36,16 @@ export default function ProjectForm({ initialData, onSuccess, onCancel }: Projec
                     id: initialData.id,
                     data: { name, description, color }
                 });
+                toast.success('Project updated successfully');
             } else {
                 await createMutation.mutateAsync({ name, description, color });
+                toast.success('Project created successfully');
             }
             onSuccess?.();
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Something went wrong');
+            const message = err.response?.data?.message || 'Something went wrong';
+            setError(message);
+            toast.error(message);
         }
     };
 
