@@ -5,5 +5,5 @@ export default [
     route("login", "routes/_auth/login.tsx"),
     route("register", "routes/_auth/register.tsx"),
     // Placeholder for protected routes
-    route("dashboard", "routes/home.tsx"),
+    route("dashboard", "routes/projects.tsx"),
 ] satisfies RouteConfig;
