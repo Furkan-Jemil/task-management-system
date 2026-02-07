@@ -3,6 +3,7 @@ import cors from 'cors';
 import * as dotenv from 'dotenv';
 import authRouter from './routes/auth';
 import projectsRouter from './routes/projects';
+import tasksRouter from './routes/tasks';
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.use(express.json());
 // Routes
 app.use('/api/auth', authRouter);
 app.use('/api/projects', projectsRouter);
+app.use('/api/tasks', tasksRouter);
 
 
 // Basic Health Check
