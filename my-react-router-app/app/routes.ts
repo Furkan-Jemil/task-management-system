@@ -7,4 +7,5 @@ export default [
     // Placeholder for protected routes
     route("dashboard", "routes/projects.tsx"),
     route("tasks", "routes/tasks.tsx"),
+    route("tasks/:id", "routes/tasks.$id.tsx"),
 ] satisfies RouteConfig;
