@@ -4,8 +4,12 @@ export default [
     index("routes/home.tsx"),
     route("login", "routes/_auth/login.tsx"),
     route("register", "routes/_auth/register.tsx"),
-    // Placeholder for protected routes
-    route("dashboard", "routes/projects.tsx"),
-    route("tasks", "routes/tasks.tsx"),
-    route("tasks/:id", "routes/tasks.$id.tsx"),
+
+    // Protected routes under AppLayout
+    route("/", "components/layout/AppLayout.tsx", [
+        route("dashboard", "routes/dashboard.tsx"),
+        route("projects", "routes/projects.tsx"),
+        route("tasks", "routes/tasks.tsx"),
+        route("tasks/:id", "routes/tasks.$id.tsx"),
+    ]),
 ] satisfies RouteConfig;
