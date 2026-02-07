@@ -4,6 +4,7 @@ import * as dotenv from 'dotenv';
 import authRouter from './routes/auth';
 import projectsRouter from './routes/projects';
 import tasksRouter from './routes/tasks';
+import uploadsRouter from './routes/uploads';
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ app.use(express.json());
 app.use('/api/auth', authRouter);
 app.use('/api/projects', projectsRouter);
 app.use('/api/tasks', tasksRouter);
+app.use('/api/uploads', uploadsRouter);
 
 
 // Basic Health Check
