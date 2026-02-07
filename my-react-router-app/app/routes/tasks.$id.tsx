@@ -5,6 +5,7 @@ import Button from "../components/ui/Button";
 import FileUpload from "../components/ui/FileUpload";
 import { useQueryClient } from "@tanstack/react-query";
 import { uploadsApi } from "../lib/api/uploads";
+import toast from "react-hot-toast";
 
 export default function TaskDetail() {
     const { id } = useParams();
@@ -20,21 +21,32 @@ export default function TaskDetail() {
 
     const handleDelete = async () => {
         if (confirm("Are you sure you want to delete this task?")) {
-            await deleteMutation.mutateAsync(task.id);
-            navigate("/tasks");
+            try {
+                await deleteMutation.mutateAsync(task.id);
+                toast.success("Task deleted successfully");
+                navigate("/tasks");
+            } catch (error) {
+                toast.error("Failed to delete task");
+            }
         }
     };
 
     const handleStatusChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
-        await updateMutation.mutateAsync({ id: task.id, data: { status: e.target.value } });
+        try {
+            await updateMutation.mutateAsync({ id: task.id, data: { status: e.target.value } });
+            toast.success(`Status updated to ${e.target.value.replace('_', ' ')}`);
+        } catch (error) {
+            toast.error("Failed to update status");
+        }
     };
 
     const handleDeleteAttachment = async (attachmentId: string) => {
         try {
             await uploadsApi.deleteAttachment(attachmentId);
             queryClient.invalidateQueries({ queryKey: ["tasks", task.id] });
+            toast.success("Attachment removed");
         } catch (error) {
-            alert("Failed to delete attachment");
+            toast.error("Failed to delete attachment");
         }
     };
 
