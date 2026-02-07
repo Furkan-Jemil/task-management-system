@@ -3,6 +3,7 @@ import { useCreateTask, useUpdateTask } from '../../lib/hooks/useTasks';
 import { useProjects } from '../../lib/hooks/useProjects';
 import Button from '../ui/Button';
 import Input from '../ui/Input';
+import toast from 'react-hot-toast';
 
 interface TaskFormProps {
     projectId?: string;
@@ -42,12 +43,16 @@ export default function TaskForm({ projectId, initialData, onSuccess, onCancel }
         try {
             if (initialData?.id) {
                 await updateMutation.mutateAsync({ id: initialData.id, data: payload });
+                toast.success('Task updated successfully');
             } else {
                 await createMutation.mutateAsync(payload);
+                toast.success('Task created successfully');
             }
             onSuccess?.();
         } catch (err: any) {
-            setError(err.response?.data?.message || 'Something went wrong');
+            const message = err.response?.data?.message || 'Something went wrong';
+            setError(message);
+            toast.error(message);
         }
     };
 
