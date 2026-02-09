@@ -5,6 +5,7 @@ import { eq, and } from 'drizzle-orm';
 import { authMiddleware } from '../middleware/auth';
 import { uploadService } from '../services/upload.service';
 import { z } from 'zod';
+import { calculateHash, sanitizeFileName } from '../utils/hash';
 
 const uploadsRouter = Router();
 
@@ -23,12 +24,12 @@ const uploadSchema = z.object({
  * GET /api/uploads/auth
  * Get authentication parameters for client-side ImageKit uploads
  */
-uploadsRouter.get('/auth', (req, res) => {
+uploadsRouter.get('/auth', (_req, res) => {
     try {
         const params = uploadService.getAuthParams();
-        res.json(params);
+        return res.json(params);
     } catch (error) {
-        res.status(500).json({ message: 'Failed to get upload auth' });
+        return res.status(500).json({ message: 'Failed to get upload auth' });
     }
 });
 
@@ -41,27 +42,57 @@ uploadsRouter.post('/image', async (req, res) => {
         const user = (req as any).user;
         const { file, fileName, taskId, fileType, fileSize } = uploadSchema.parse(req.body);
 
-        // 1. Upload to ImageKit
-        const uploadResult = await uploadService.uploadImage(file, fileName);
+        // 1. Sanitize filename
+        const sanitizedName = sanitizeFileName(fileName);
 
-        // 2. Save to database
-        const [newAttachment] = await db.insert(taskAttachments).values({
-            taskId,
-            fileUrl: uploadResult.url,
-            fileId: uploadResult.fileId,
-            fileName: fileName,
-            fileType: fileType,
-            fileSize: fileSize,
-            uploadedBy: user.id,
-        } as any).returning();
+        // 2. Calculate hash for deduplication
+        const fileHash = calculateHash(file);
 
-        res.status(201).json(newAttachment);
+        // 3. Check for existing attachment with the same hash
+        const existingAttachment = await db.query.taskAttachments.findFirst({
+            where: eq(taskAttachments.fileHash, fileHash),
+        });
+
+        let uploadResult;
+        let attachmentData;
+
+        if (existingAttachment) {
+            // Use existing file details but create NEW record for THIS task
+            attachmentData = {
+                taskId,
+                fileUrl: existingAttachment.fileUrl,
+                fileId: existingAttachment.fileId,
+                fileName: sanitizedName,
+                fileType: fileType,
+                fileSize: fileSize,
+                fileHash: fileHash,
+                uploadedBy: user.id,
+            };
+        } else {
+            // 4. Upload to ImageKit if not found
+            uploadResult = await uploadService.uploadImage(file, sanitizedName);
+            attachmentData = {
+                taskId,
+                fileUrl: uploadResult.url,
+                fileId: uploadResult.fileId,
+                fileName: sanitizedName,
+                fileType: fileType,
+                fileSize: fileSize,
+                fileHash: fileHash,
+                uploadedBy: user.id,
+            };
+        }
+
+        // 5. Save to database
+        const [newAttachment] = await db.insert(taskAttachments).values(attachmentData as any).returning();
+
+        return res.status(201).json(newAttachment);
     } catch (error) {
         console.error('Upload route error:', error);
         if (error instanceof z.ZodError) {
             return res.status(400).json({ message: 'Validation failed', errors: error.errors });
         }
-        res.status(500).json({ message: 'Failed to upload image' });
+        return res.status(500).json({ message: 'Failed to upload image' });
     }
 });
 
@@ -90,10 +121,10 @@ uploadsRouter.delete('/image/:id', async (req, res) => {
         await db.delete(taskAttachments)
             .where(eq(taskAttachments.id, id));
 
-        res.json({ message: 'Attachment deleted successfully' });
+        return res.json({ message: 'Attachment deleted successfully' });
     } catch (error) {
         console.error('Delete attachment error:', error);
-        res.status(500).json({ message: 'Failed to delete attachment' });
+        return res.status(500).json({ message: 'Failed to delete attachment' });
     }
 });
 
