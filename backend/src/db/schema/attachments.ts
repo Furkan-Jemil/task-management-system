@@ -15,6 +15,7 @@ export const taskAttachments = pgTable('task_attachments', {
     fileName: varchar('file_name', { length: 255 }).notNull(),
     fileType: varchar('file_type', { length: 100 }).notNull(),
     fileSize: integer('file_size').notNull(),
+    fileHash: varchar('file_hash', { length: 255 }),
     uploadedBy: uuid('uploaded_by')
         .notNull()
         .references(() => users.id, { onDelete: 'cascade' }),
