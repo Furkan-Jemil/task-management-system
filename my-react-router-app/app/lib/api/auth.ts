@@ -8,7 +8,7 @@ export const authApi = {
      * Register a new user
      */
     register: async (data: any) => {
-        const response = await apiClient.post('/auth/register', data);
+        const response = await apiClient.post('/auth/sign-up/email', data);
         return response.data;
     },
 
@@ -16,7 +16,7 @@ export const authApi = {
      * Login user
      */
     login: async (data: any) => {
-        const response = await apiClient.post('/auth/login', data);
+        const response = await apiClient.post('/auth/sign-in/email', data);
         return response.data;
     },
 
@@ -24,7 +24,7 @@ export const authApi = {
      * Logout user
      */
     logout: async () => {
-        const response = await apiClient.post('/auth/logout');
+        const response = await apiClient.post('/auth/sign-out');
         return response.data;
     },
 
@@ -32,7 +32,7 @@ export const authApi = {
      * Get current session/user
      */
     getSession: async () => {
-        const response = await apiClient.get('/auth/session');
+        const response = await apiClient.get('/auth/get-session');
         return response.data;
     },
 };
