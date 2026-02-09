@@ -1,0 +1,1 @@
+ALTER TABLE "task_attachments" ADD COLUMN "file_hash" varchar(255);
