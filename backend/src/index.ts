@@ -24,6 +24,14 @@ app.use('/api/projects', projectsRouter);
 app.use('/api/tasks', tasksRouter);
 app.use('/api/uploads', uploadsRouter);
 
+// Root Route
+app.get('/', (_req, res) => {
+    res.json({
+        message: '🚀 Task Management API is running',
+        docs: '/api/docs (if implemented)',
+        health: '/health'
+    });
+});
 
 // Basic Health Check
 app.get('/health', (_req, res) => {
