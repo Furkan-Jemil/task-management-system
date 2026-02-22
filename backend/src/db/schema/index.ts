@@ -19,6 +19,8 @@ export const usersRelations = relations(users, ({ many }) => ({
     ownedWorkspaces: many(workspaces),
     sessions: many(session),
     accounts: many(account),
+    projects: many(projects),
+    tasks: many(tasks),
 }));
 
 // Workspace relations
