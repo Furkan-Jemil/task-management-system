@@ -1,8 +1,13 @@
 import { relations } from 'drizzle-orm';
 import { users } from './users';
-import { projects } from './projects';
-import { tasks } from './tasks';
-import { taskAttachments } from './attachments';
+import { workspaces } from './workspaces';
+import { workspaceMembers } from './workspace_members';
+import { boards } from './boards';
+import { lists } from './lists';
+import { cards } from './cards';
+import { session } from './session';
+import { account } from './account';
+import { verification } from './verification';
 
 /**
  * Define relationships between tables
@@ -10,54 +15,72 @@ import { taskAttachments } from './attachments';
 
 // User relations
 export const usersRelations = relations(users, ({ many }) => ({
-    projects: many(projects),
-    tasks: many(tasks),
-    uploadedAttachments: many(taskAttachments),
+    memberships: many(workspaceMembers),
+    ownedWorkspaces: many(workspaces),
+    sessions: many(session),
+    accounts: many(account),
 }));
 
-// Project relations
-export const projectsRelations = relations(projects, ({ one, many }) => ({
+// Workspace relations
+export const workspacesRelations = relations(workspaces, ({ one, many }) => ({
     owner: one(users, {
-        fields: [projects.userId],
+        fields: [workspaces.ownerId],
         references: [users.id],
     }),
-    tasks: many(tasks),
+    members: many(workspaceMembers),
+    boards: many(boards),
 }));
 
-// Task relations
-export const tasksRelations = relations(tasks, ({ one, many }) => ({
-    owner: one(users, {
-        fields: [tasks.userId],
+// Workspace Member relations
+export const workspaceMembersRelations = relations(workspaceMembers, ({ one }) => ({
+    workspace: one(workspaces, {
+        fields: [workspaceMembers.workspaceId],
+        references: [workspaces.id],
+    }),
+    user: one(users, {
+        fields: [workspaceMembers.userId],
         references: [users.id],
     }),
-    project: one(projects, {
-        fields: [tasks.projectId],
-        references: [projects.id],
-    }),
-    attachments: many(taskAttachments),
 }));
 
-// Task attachment relations
-export const taskAttachmentsRelations = relations(taskAttachments, ({ one }) => ({
-    task: one(tasks, {
-        fields: [taskAttachments.taskId],
-        references: [tasks.id],
+// Board relations
+export const boardsRelations = relations(boards, ({ one, many }) => ({
+    workspace: one(workspaces, {
+        fields: [boards.workspaceId],
+        references: [workspaces.id],
     }),
-    uploader: one(users, {
-        fields: [taskAttachments.uploadedBy],
-        references: [users.id],
+    lists: many(lists),
+}));
+
+// List relations
+export const listsRelations = relations(lists, ({ one, many }) => ({
+    board: one(boards, {
+        fields: [lists.boardId],
+        references: [boards.id],
+    }),
+    cards: many(cards),
+}));
+
+// Card relations
+export const cardsRelations = relations(cards, ({ one }) => ({
+    list: one(lists, {
+        fields: [cards.listId],
+        references: [lists.id],
     }),
 }));
 
 /**
  * Export all schemas
  */
-export { users } from './users';
-export { projects } from './projects';
-export { tasks, taskStatusEnum, taskPriorityEnum } from './tasks';
-export { taskAttachments } from './attachments';
-
-export type { User, NewUser } from './users';
-export type { Project, NewProject } from './projects';
-export type { Task, NewTask, TaskStatus, TaskPriority } from './tasks';
-export type { TaskAttachment, NewTaskAttachment } from './attachments';
+export * from './users';
+export * from './workspaces';
+export * from './workspace_members';
+export * from './boards';
+export * from './lists';
+export * from './cards';
+export * from './session';
+export * from './account';
+export * from './verification';
+export * from './projects';
+export * from './tasks';
+export * from './attachments';
