@@ -1,4 +1,4 @@
-import { pgTable, varchar, text, integer, pgEnum, timestamp, date } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, varchar, text, integer, pgEnum, timestamp, date } from 'drizzle-orm/pg-core';
 import { lists } from './lists';
 
 export const priorityEnum = pgEnum('priority', ['low', 'medium', 'high']);
@@ -7,8 +7,8 @@ export const priorityEnum = pgEnum('priority', ['low', 'medium', 'high']);
  * Cards table - individual tasks within a list
  */
 export const cards = pgTable('cards', {
-    id: text('id').primaryKey(),
-    listId: text('list_id')
+    id: uuid('id').primaryKey().defaultRandom(),
+    listId: uuid('list_id')
         .notNull()
         .references(() => lists.id, { onDelete: 'cascade' }),
     title: varchar('title', { length: 255 }).notNull(),
