@@ -8,6 +8,9 @@ import { cards } from './cards';
 import { session } from './session';
 import { account } from './account';
 import { verification } from './verification';
+import { projects } from './projects';
+import { tasks } from './tasks';
+import { taskAttachments } from './attachments';
 
 /**
  * Define relationships between tables
@@ -68,6 +71,40 @@ export const cardsRelations = relations(cards, ({ one }) => ({
     list: one(lists, {
         fields: [cards.listId],
         references: [lists.id],
+    }),
+}));
+
+// Project relations
+export const projectsRelations = relations(projects, ({ one, many }) => ({
+    owner: one(users, {
+        fields: [projects.userId],
+        references: [users.id],
+    }),
+    tasks: many(tasks),
+}));
+
+// Task relations
+export const tasksRelations = relations(tasks, ({ one, many }) => ({
+    owner: one(users, {
+        fields: [tasks.userId],
+        references: [users.id],
+    }),
+    project: one(projects, {
+        fields: [tasks.projectId],
+        references: [projects.id],
+    }),
+    attachments: many(taskAttachments),
+}));
+
+// Attachment relations
+export const taskAttachmentsRelations = relations(taskAttachments, ({ one }) => ({
+    task: one(tasks, {
+        fields: [taskAttachments.taskId],
+        references: [tasks.id],
+    }),
+    uploader: one(users, {
+        fields: [taskAttachments.uploadedBy],
+        references: [users.id],
     }),
 }));
 
