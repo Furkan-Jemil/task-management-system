@@ -1,4 +1,4 @@
-import { pgTable, varchar, text, integer, timestamp } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, varchar, text, integer, timestamp } from 'drizzle-orm/pg-core';
 import { tasks } from './tasks';
 import { users } from './users';
 
@@ -6,8 +6,8 @@ import { users } from './users';
  * Task attachments table - stores file attachments for tasks
  */
 export const taskAttachments = pgTable('task_attachments', {
-    id: text('id').primaryKey(),
-    taskId: text('task_id')
+    id: uuid('id').primaryKey().defaultRandom(),
+    taskId: uuid('task_id')
         .notNull()
         .references(() => tasks.id, { onDelete: 'cascade' }),
     fileUrl: text('file_url').notNull(),
@@ -16,7 +16,7 @@ export const taskAttachments = pgTable('task_attachments', {
     fileType: varchar('file_type', { length: 100 }).notNull(),
     fileSize: integer('file_size').notNull(),
     fileHash: varchar('file_hash', { length: 255 }),
-    uploadedBy: text('uploaded_by')
+    uploadedBy: uuid('uploaded_by')
         .notNull()
         .references(() => users.id, { onDelete: 'cascade' }),
     createdAt: timestamp('created_at').defaultNow().notNull(),
