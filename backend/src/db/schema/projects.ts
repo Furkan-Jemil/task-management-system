@@ -1,15 +1,15 @@
-import { pgTable, varchar, text, timestamp } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, varchar, text, timestamp } from 'drizzle-orm/pg-core';
 import { users } from './users';
 
 /**
  * Projects table - organizes tasks into projects/categories
  */
 export const projects = pgTable('projects', {
-    id: text('id').primaryKey(),
+    id: uuid('id').primaryKey().defaultRandom(),
     name: varchar('name', { length: 255 }).notNull(),
     description: text('description'),
     color: varchar('color', { length: 7 }).default('#3B82F6').notNull(),
-    userId: text('user_id')
+    userId: uuid('user_id')
         .notNull()
         .references(() => users.id, { onDelete: 'cascade' }),
     createdAt: timestamp('created_at').defaultNow().notNull(),
