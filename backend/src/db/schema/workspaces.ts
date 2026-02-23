@@ -1,13 +1,13 @@
-import { pgTable, varchar, timestamp, text } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, varchar, timestamp } from 'drizzle-orm/pg-core';
 import { users } from './users';
 
 /**
  * Workspaces table - organizes projects/boards into multi-tenant containers
  */
 export const workspaces = pgTable('workspaces', {
-    id: text('id').primaryKey(),
+    id: uuid('id').primaryKey().defaultRandom(),
     name: varchar('name', { length: 255 }).notNull(),
-    ownerId: text('owner_id')
+    ownerId: uuid('owner_id')
         .notNull()
         .references(() => users.id, { onDelete: 'cascade' }),
     createdAt: timestamp('created_at').defaultNow().notNull(),
