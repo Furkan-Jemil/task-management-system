@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { db } from "../db";
 import { tasks, taskStatusEnum, taskPriorityEnum } from "../db/schema";
-import { eq, and, or } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { authMiddleware } from "../middleware/auth";
 import { z } from "zod";
 
@@ -13,8 +13,8 @@ tasksRouter.use(authMiddleware);
 const taskSchema = z.object({
     title: z.string().min(1, "Title is required").max(255),
     description: z.string().optional(),
-    status: z.enum(taskStatusEnum.enumValues).default("todo"),
-    priority: z.enum(taskPriorityEnum.enumValues).default("medium"),
+    status: z.enum(taskStatusEnum).default("todo"),
+    priority: z.enum(taskPriorityEnum).default("medium"),
     dueDate: z.string().optional().transform(val => val ? new Date(val) : undefined),
     projectId: z.string().uuid().optional(),
 });
@@ -42,9 +42,9 @@ tasksRouter.get("/", async (req, res) => {
             }
         });
 
-        res.json(userTasks);
+        return res.json(userTasks);
     } catch (error) {
-        res.status(500).json({ message: "Failed to fetch tasks" });
+        return res.status(500).json({ message: "Failed to fetch tasks" });
     }
 });
 
@@ -62,12 +62,12 @@ tasksRouter.post("/", async (req, res) => {
             userId: user.id,
         } as any).returning();
 
-        res.status(201).json(newTask);
+        return res.status(201).json(newTask);
     } catch (error) {
         if (error instanceof z.ZodError) {
             return res.status(400).json({ message: "Validation failed", errors: error.errors });
         }
-        res.status(500).json({ message: "Failed to create task" });
+        return res.status(500).json({ message: "Failed to create task" });
     }
 });
 
@@ -92,9 +92,9 @@ tasksRouter.get("/:id", async (req, res) => {
             return res.status(404).json({ message: "Task not found" });
         }
 
-        res.json(task);
+        return res.json(task);
     } catch (error) {
-        res.status(500).json({ message: "Failed to fetch task" });
+        return res.status(500).json({ message: "Failed to fetch task" });
     }
 });
 
@@ -121,12 +121,12 @@ tasksRouter.patch("/:id", async (req, res) => {
             return res.status(404).json({ message: "Task not found" });
         }
 
-        res.json(updatedTask);
+        return res.json(updatedTask);
     } catch (error) {
         if (error instanceof z.ZodError) {
             return res.status(400).json({ message: "Validation failed", errors: error.errors });
         }
-        res.status(500).json({ message: "Failed to update task" });
+        return res.status(500).json({ message: "Failed to update task" });
     }
 });
 
@@ -147,9 +147,9 @@ tasksRouter.delete("/:id", async (req, res) => {
             return res.status(404).json({ message: "Task not found" });
         }
 
-        res.json({ message: "Task deleted successfully" });
+        return res.json({ message: "Task deleted successfully" });
     } catch (error) {
-        res.status(500).json({ message: "Failed to delete task" });
+        return res.status(500).json({ message: "Failed to delete task" });
     }
 });
 
