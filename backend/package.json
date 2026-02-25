@@ -11,6 +11,7 @@
         "db:generate": "drizzle-kit generate",
         "db:migrate": "tsx src/db/migrate.ts",
         "db:push": "drizzle-kit push",
+        "db:push:local": "drizzle-kit push --dialect sqlite --schema src/db/schema --url sqlite.db",
         "db:studio": "drizzle-kit studio"
     },
     "keywords": [
@@ -24,14 +25,16 @@
     "dependencies": {
         "@neondatabase/serverless": "^1.0.0",
         "better-auth": "^1.4.18",
+        "better-sqlite3": "^12.6.2",
         "cors": "^2.8.5",
-        "dotenv": "^16.4.7",
+        "dotenv": "^16.6.1",
         "drizzle-orm": "^0.45.1",
         "express": "^4.21.2",
         "imagekit": "^5.2.0",
         "zod": "^3.24.1"
     },
     "devDependencies": {
+        "@types/better-sqlite3": "^7.6.13",
         "@types/cors": "^2.8.17",
         "@types/express": "^5.0.0",
         "@types/node": "^22.10.5",
