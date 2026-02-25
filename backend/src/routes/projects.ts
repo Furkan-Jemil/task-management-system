@@ -27,9 +27,9 @@ projectsRouter.get("/", async (req, res) => {
             where: eq(projects.userId, user.id),
             orderBy: projects.createdAt,
         });
-        res.json(userProjects);
+        return res.json(userProjects);
     } catch (error) {
-        res.status(500).json({ message: "Failed to fetch projects" });
+        return res.status(500).json({ message: "Failed to fetch projects" });
     }
 });
 
@@ -47,12 +47,12 @@ projectsRouter.post("/", async (req, res) => {
             userId: user.id,
         }).returning();
 
-        res.status(201).json(newProject);
+        return res.status(201).json(newProject);
     } catch (error) {
         if (error instanceof z.ZodError) {
             return res.status(400).json({ message: "Validation failed", errors: error.errors });
         }
-        res.status(500).json({ message: "Failed to create project" });
+        return res.status(500).json({ message: "Failed to create project" });
     }
 });
 
@@ -73,9 +73,9 @@ projectsRouter.get("/:id", async (req, res) => {
             return res.status(404).json({ message: "Project not found" });
         }
 
-        res.json(project);
+        return res.json(project);
     } catch (error) {
-        res.status(500).json({ message: "Failed to fetch project" });
+        return res.status(500).json({ message: "Failed to fetch project" });
     }
 });
 
@@ -98,12 +98,12 @@ projectsRouter.patch("/:id", async (req, res) => {
             return res.status(404).json({ message: "Project not found" });
         }
 
-        res.json(updatedProject);
+        return res.json(updatedProject);
     } catch (error) {
         if (error instanceof z.ZodError) {
             return res.status(400).json({ message: "Validation failed", errors: error.errors });
         }
-        res.status(500).json({ message: "Failed to update project" });
+        return res.status(500).json({ message: "Failed to update project" });
     }
 });
 
@@ -124,9 +124,9 @@ projectsRouter.delete("/:id", async (req, res) => {
             return res.status(404).json({ message: "Project not found" });
         }
 
-        res.json({ message: "Project deleted successfully" });
+        return res.json({ message: "Project deleted successfully" });
     } catch (error) {
-        res.status(500).json({ message: "Failed to delete project" });
+        return res.status(500).json({ message: "Failed to delete project" });
     }
 });
 
