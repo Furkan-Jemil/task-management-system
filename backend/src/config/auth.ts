@@ -2,11 +2,16 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "../db";
 import * as schema from "../db/schema";
+import * as dotenv from 'dotenv';
+
+dotenv.config();
+
+const useLocalDb = process.env.USE_LOCAL_DB === 'true';
 
 export const auth = betterAuth({
     baseURL: process.env.BETTERAUTH_URL || "http://localhost:5000",
     database: drizzleAdapter(db, {
-        provider: "pg",
+        provider: useLocalDb ? "sqlite" : "pg",
         schema: {
             user: schema.users,
             session: schema.session,
