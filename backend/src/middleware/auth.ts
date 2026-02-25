@@ -11,7 +11,8 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
     });
 
     if (!session) {
-        return res.status(401).json({ message: "Unauthorized" });
+        res.status(401).json({ message: "Unauthorized" });
+        return;
     }
 
     // Attach user and session to request for use in controllers
