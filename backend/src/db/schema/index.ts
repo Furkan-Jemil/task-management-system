@@ -7,7 +7,6 @@ import { lists } from './lists';
 import { cards } from './cards';
 import { session } from './session';
 import { account } from './account';
-import { verification } from './verification';
 import { projects } from './projects';
 import { tasks } from './tasks';
 import { taskAttachments } from './attachments';
