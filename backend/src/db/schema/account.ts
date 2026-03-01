@@ -1,11 +1,12 @@
-import { pgTable, uuid, text, timestamp } from 'drizzle-orm/pg-core';
+import { table, id, foreignId, text, timestamp, createdAt, updatedAt } from '../utils';
+import { users } from './users';
 
 /**
  * Account table - stores OAuth/external account connections for better-auth
  */
-export const account = pgTable('account', {
-    id: uuid('id').primaryKey().defaultRandom(),
-    userId: uuid('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+export const account = table('account', {
+    id: id('id'),
+    userId: foreignId('user_id', () => users.id),
     accountId: text('account_id').notNull(),
     providerId: text('provider_id').notNull(),
     password: text('password'),
@@ -13,11 +14,9 @@ export const account = pgTable('account', {
     refreshToken: text('refresh_token'),
     idToken: text('id_token'),
     expiresAt: timestamp('expires_at'),
-    createdAt: timestamp('created_at').defaultNow().notNull(),
-    updatedAt: timestamp('updated_at').defaultNow().notNull(),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
 });
-
-import { users } from './users';
 
 export type Account = typeof account.$inferSelect;
 export type NewAccount = typeof account.$inferInsert;
