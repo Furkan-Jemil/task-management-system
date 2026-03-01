@@ -43,14 +43,14 @@ export const timestamp: any = (name: string) => {
 
 export const createdAt: any = (name: string = 'created_at') => {
     if (useLocalDb) {
-        return sqliteInteger(name, { mode: 'timestamp' }).defaultNow().notNull();
+        return sqliteInteger(name, { mode: 'timestamp' }).$defaultFn(() => new Date()).notNull();
     }
     return pgTimestamp(name).defaultNow().notNull();
 };
 
 export const updatedAt: any = (name: string = 'updated_at') => {
     if (useLocalDb) {
-        return sqliteInteger(name, { mode: 'timestamp' }).defaultNow().notNull();
+        return sqliteInteger(name, { mode: 'timestamp' }).$defaultFn(() => new Date()).notNull();
     }
     return pgTimestamp(name).defaultNow().notNull();
 };
