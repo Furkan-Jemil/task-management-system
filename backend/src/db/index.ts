@@ -1,4 +1,5 @@
 import { neon } from '@neondatabase/serverless';
+import { fileURLToPath } from 'url';
 import { drizzle as drizzleNeon } from 'drizzle-orm/neon-http';
 import { drizzle as drizzleSqlite } from 'drizzle-orm/better-sqlite3';
 import Database from 'better-sqlite3';
@@ -15,7 +16,11 @@ let db: any;
 if (useLocalDb) {
     console.log('Using local SQLite database...');
     // Create a local SQLite database in the root of the backend folder
-    const sqlite = new Database(path.resolve(process.cwd(), 'sqlite.db'));
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+    const dbPath = path.resolve(__dirname, '../../sqlite.db');
+    console.log('Database path:', dbPath);
+    const sqlite = new Database(dbPath);
     db = drizzleSqlite(sqlite, { schema });
 } else {
     console.log('Using Neon PostgreSQL database...');
