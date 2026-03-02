@@ -10,6 +10,9 @@ const useLocalDb = process.env.USE_LOCAL_DB === 'true';
 
 export const auth = betterAuth({
     baseURL: process.env.BETTERAUTH_URL || "http://localhost:5000",
+    logger: {
+        level: "debug",
+    },
     database: drizzleAdapter(db, {
         provider: useLocalDb ? "sqlite" : "pg",
         schema: {
