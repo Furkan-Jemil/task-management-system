@@ -1,4 +1,4 @@
-import { pgTable as pgTableFn, uuid as pgUuid, varchar as pgVarchar, text as pgText, timestamp as pgTimestamp } from 'drizzle-orm/pg-core';
+import { pgTable as pgTableFn, uuid as pgUuid, varchar as pgVarchar, text as pgText, timestamp as pgTimestamp, boolean as pgBoolean } from 'drizzle-orm/pg-core';
 import { sqliteTable as sqliteTableFn, text as sqliteText, integer as sqliteInteger } from 'drizzle-orm/sqlite-core';
 import * as dotenv from 'dotenv';
 
@@ -14,10 +14,14 @@ export const table: any = (name: string, columns: any) => {
 };
 
 export const id: any = (name: string) => {
+    return text(name).primaryKey();
+};
+
+export const boolean: any = (name: string) => {
     if (useLocalDb) {
-        return sqliteText(name).primaryKey();
+        return sqliteInteger(name, { mode: 'boolean' });
     }
-    return pgUuid(name).primaryKey().defaultRandom();
+    return pgBoolean(name);
 };
 
 export const varchar: any = (name: string, options: { length: number }) => {
@@ -56,8 +60,5 @@ export const updatedAt: any = (name: string = 'updated_at') => {
 };
 
 export const foreignId: any = (name: string, references: () => any) => {
-    if (useLocalDb) {
-        return sqliteText(name).notNull().references(references, { onDelete: 'cascade' });
-    }
-    return pgUuid(name).notNull().references(references, { onDelete: 'cascade' });
+    return text(name).notNull().references(references, { onDelete: 'cascade' });
 };
