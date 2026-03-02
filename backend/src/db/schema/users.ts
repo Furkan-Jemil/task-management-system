@@ -1,4 +1,4 @@
-import { table, id, varchar, text, timestamp, createdAt, updatedAt } from '../utils';
+import { table, id, varchar, text, boolean, createdAt, updatedAt } from '../utils';
 
 /**
  * Users table - stores user account information
@@ -7,7 +7,7 @@ export const users = table('users', {
     id: id('id'),
     email: varchar('email', { length: 255 }).notNull().unique(),
     name: varchar('name', { length: 255 }),
-    emailVerified: timestamp('email_verified'),
+    emailVerified: boolean('email_verified').notNull().default(false),
     image: text('image'),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
